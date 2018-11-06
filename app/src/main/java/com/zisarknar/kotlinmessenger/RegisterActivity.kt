@@ -86,13 +86,13 @@ class RegisterActivity : AppCompatActivity() {
 
         val filename = UUID.randomUUID().toString()
         val rel = FirebaseStorage.getInstance().getReference("/images/$filename")
-        rel.putFile(selectedPhotoUri!!).addOnSuccessListener {
+        rel.putFile(selectedPhotoUri!!).addOnSuccessListener { it ->
             Log.d("Register", "Succefully uploaded ${it.metadata?.path}")
 
             rel.downloadUrl.addOnSuccessListener {
 
                 Log.d("Register", "Uploaded  Failed ${it.toString()}")
-                saveUserToFirebaseDatabase(it.path)
+                saveUserToFirebaseDatabase(it.toString())
             }
         }.addOnFailureListener{
             Log.d("Register", "Uploaded  Failed ${it.message}")
@@ -109,6 +109,9 @@ class RegisterActivity : AppCompatActivity() {
         ref.setValue(user)
             .addOnSuccessListener {
             Log.d("Register", "Finally we have saved you user to database")
+                val intent = Intent(this, LatestMessagesActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
         }
             .addOnFailureListener {
                 Log.d("Register", "Failed to upload to database ${it.message}")
@@ -116,4 +119,6 @@ class RegisterActivity : AppCompatActivity() {
     }
 }
 
-class User(val uid: String, val username: String, val profileImageUrl:String)
+class User(val uid: String, val username: String, val profileImageUrl:String) {
+    constructor() : this ("", "", "")
+}
