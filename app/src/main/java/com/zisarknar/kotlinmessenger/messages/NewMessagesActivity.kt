@@ -1,5 +1,6 @@
-package com.zisarknar.kotlinmessenger
+package com.zisarknar.kotlinmessenger.messages
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +12,8 @@ import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
+import com.zisarknar.kotlinmessenger.R
+import com.zisarknar.kotlinmessenger.registerLogin.User
 import kotlinx.android.synthetic.main.activity_new_messages.*
 import kotlinx.android.synthetic.main.item_view_new_user.view.*
 
@@ -25,6 +28,10 @@ class NewMessagesActivity : AppCompatActivity() {
         fetchUsers()
     }
 
+    companion object {
+        const val USER_KEY = "USER_KEY"
+    }
+
     private fun fetchUsers() {
         val ref = FirebaseDatabase.getInstance().getReference("/users")
             ref.addListenerForSingleValueEvent(object: ValueEventListener {
@@ -37,6 +44,14 @@ class NewMessagesActivity : AppCompatActivity() {
                         val user = it.getValue(User::class.java)
                         if (user != null ) {
                             adapter.add(UserItem(user))
+                        }
+
+                        adapter.setOnItemClickListener { item, view ->
+                            val userItem = item as UserItem
+                            val intent = Intent(view.context, ChatLogActivity::class.java)
+                            intent.putExtra(USER_KEY, userItem.user)
+                            startActivity(intent)
+                            finish()
                         }
                         rv_contents.adapter = adapter
                     }

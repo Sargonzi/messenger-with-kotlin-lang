@@ -1,17 +1,20 @@
-package com.zisarknar.kotlinmessenger
+package com.zisarknar.kotlinmessenger.registerLogin
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.zisarknar.kotlinmessenger.messages.LatestMessagesActivity
+import com.zisarknar.kotlinmessenger.R
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_register.*
 import java.util.*
 
@@ -104,7 +107,11 @@ class RegisterActivity : AppCompatActivity() {
         val uid = FirebaseAuth.getInstance().uid ?: ""
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
 
-        val user = User(uid, username_edittext_register.text.toString(), photoUrlString)
+        val user = User(
+            uid,
+            username_edittext_register.text.toString(),
+            photoUrlString
+        )
 
         ref.setValue(user)
             .addOnSuccessListener {
@@ -119,6 +126,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 }
 
-class User(val uid: String, val username: String, val profileImageUrl:String) {
+@Parcelize
+class User(val uid: String, val username: String, val profileImageUrl:String) : Parcelable{
     constructor() : this ("", "", "")
 }
